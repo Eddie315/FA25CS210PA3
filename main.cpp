@@ -88,9 +88,9 @@ void printMaze(const vector<vector<int>>& maze,
 // Students must fill parent[][] correctly during DFS
 // ----------------------------------------------------------
 void printPath(pair<int,int> exitcell,
-               const vector<vector<int>>& parent_r,
-               const vector<vector<int>>& parent_c,
-               int ent_r, int ent_c)
+                 const vector<vector<int>>& parent_r,
+                 const vector<vector<int>>& parent_c,
+                 int ent_r, int ent_c)
 {
     int r = exitcell.first;
     int c = exitcell.second;
@@ -113,13 +113,41 @@ void printPath(pair<int,int> exitcell,
     }
 }
 
+
 // ----------------------------------------------------------
 // STUDENTS IMPLEMENT DFS HERE
 // Add arguments, return type, and logic
 // ----------------------------------------------------------
 // bool dfs(……) {
 //     // Your code here
-// }
+bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<int>>& parent_r, vector<vector<int>>& parent_c, vector<vector<bool>>& visited, int exit_r, int exit_c) {
+    // base case for the recurssive call and is met when we hit an exit point in both rows and cols
+    if (r<0 ||c<0 || r>=maze.size() || c>=maze[0].size()) return false;
+    // see if the current idx is stopped
+    if (r == exit_r && c == exit_c) return true;
+    // checking to see either if rows or cols are still in bound
+    if (maze[r][c] ==1) return false;
+    // checks if the idx if visted
+    if (visited[r][c]) return false;
+    //marks it is traveled to
+    visited[r][c] = true;
+
+    // for loop to meet all conditions of left, right, up down
+    for (int i = 0; i < 4; i++) {
+        int row2 = r + dr[i]; // new rows
+        int col2 = c + dc[i]; // new cols
+
+        if (!visited [row2] [col2]){
+            parent_r[row2][col2] = r;
+            parent_c[row2][col2] = c;
+
+            // recussive call to check on the neighbors until base case is met
+            if (dfs(row2,col2, maze,  parent_r, parent_c, visited, exit_r, exit_c)) return true;
+        }
+    }
+    // if nothing returned returns false
+    return false;
+ }
 
 
 // ----------------------------------------------------------
@@ -160,15 +188,20 @@ int main() {
     // Call your DFS, track visited, and fill parent_r and parent_c
     // ------------------------------------------------------
     // bool found = dfs(ent_r, ent_c, maze, visited, parent_r, parent_c, exit_r, exit_c);
-
+    // using the comments given to call to our functions
+    bool found = dfs(ent_r, ent_c, maze, parent_r, parent_c, visited, exit_r, exit_c);
     // ------------------------------------------------------
     // STUDENT WORK:
     // If found, print the path
+    // checks if found and if it is it calls to the print path method from above and displays the exit, parent and entrence
+    if(found){
+        printPath(exitcell, parent_r, parent_c, ent_r, ent_c);
+    }
+    // else nothing happens and lets the user know no path is avlaible
+    else{
+        cout << "No path from entrance to exit\n";
+    }
     // ------------------------------------------------------
-    // if (found) {
-    //     printPath(exitcell, parent_r, parent_c, ent_r, ent_c);
-    // } else {
-    //     cout << "\nNo path exists.\n";
     // }
 
     return 0;
